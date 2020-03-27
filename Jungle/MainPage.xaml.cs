@@ -76,13 +76,7 @@ namespace Jungle
                         new BitmapImage(new Uri($"ms-appx:///Assets/{_game.GetSquare(row, col).ImageFile}.jpg"))
                 };
 
-                Piece piece = _game.GetSquare(row, col).Piece;
-                if (piece != null)
-                {
-                    Image img = new Image();
-                    img.Source = new BitmapImage(new Uri($"ms-appx:///Assets/{piece.ImageFile}.jpg"));
-                    boardMatrix[row,col].Child = img;
-                }
+                Update(row,col);
                 GrdMain.Children.Add(boardMatrix[row, col]);
             }
 
@@ -106,10 +100,14 @@ namespace Jungle
         {
             if (_startSquare != null && _endSquare != null)
             {
-                Grid.SetRow(_startSquare, _dragEndRow);
-                Grid.SetColumn(_startSquare, _dragEndColumn);
-                Grid.SetRow(_endSquare, _dragStartRow);
-                Grid.SetColumn(_endSquare, _dragStartColumn);
+                _game.MakeMove(new Move(_game.GetSquare(_dragStartRow, _dragStartColumn),_game.GetSquare(_dragEndRow, _dragEndColumn)));
+                Update(_dragStartRow, _dragStartColumn);
+                Update(_dragEndRow, _dragEndColumn);
+
+                //Grid.SetRow(_startSquare, _dragEndRow);
+                //Grid.SetColumn(_startSquare, _dragEndColumn);
+                //Grid.SetRow(_endSquare, _dragStartRow);
+                //Grid.SetColumn(_endSquare, _dragStartColumn);
                 ResetDragState();
             }
         }
@@ -138,6 +136,19 @@ namespace Jungle
             _dragStartColumn = -1;
             _dragEndRow = -1;
             _dragEndColumn = -1;
+        }
+
+        private void Update(int row, int col)
+        {
+            Piece piece= _game.GetSquare(row, col).Piece;
+            if (_game.GetSquare(row, col).Piece == null)
+                boardMatrix[row, col].Child = null;
+            else
+            {
+                Image img = new Image();
+                img.Source = new BitmapImage(new Uri($"ms-appx:///Assets/{piece.ImageFile}.jpg"));
+                boardMatrix[row, col].Child = img;
+            }
         }
     }
 }

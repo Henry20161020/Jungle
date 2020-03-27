@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace JungleLibrary
 {
@@ -59,6 +60,12 @@ namespace JungleLibrary
             return _board[row, column];
         }
 
+        public void MakeMove(Move move)
+        {
+            move.EndSquare.Piece = move.StartSquare.Piece;
+            move.StartSquare.Piece = null;
+            
+        }
 
 
     }

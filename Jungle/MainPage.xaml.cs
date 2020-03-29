@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using JungleLibrary;
 
+
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace Jungle
@@ -51,21 +52,11 @@ namespace Jungle
             for (int row = 0; row < 9; row++)
             for (int col = 0; col < 7; col++)
             {
-                boardMatrix[row, col] = new Border()
-                {
-                    BorderThickness = new Thickness()
-                    {
-                        Bottom = 1,
-                        Left = 1,
-                        Right = 1,
-                        Top = 1
-                    },
-                    BorderBrush = new SolidColorBrush(Colors.Black)
-                };
+                boardMatrix[row, col] = new Border();
                 boardMatrix[row, col].SetValue(Grid.RowProperty, row);
                 boardMatrix[row, col].SetValue(Grid.ColumnProperty, col);
                 boardMatrix[row, col].AllowDrop = true;
-                boardMatrix[row, col].CanDrag = true;
+                
                 boardMatrix[row, col].DragStarting += OnDragStartHandler;
                 boardMatrix[row, col].DragOver += OnDragEnterHandler;
                 boardMatrix[row, col].DropCompleted += OnDropCompletedHandler;
@@ -80,6 +71,7 @@ namespace Jungle
                 GrdMain.Children.Add(boardMatrix[row, col]);
             }
 
+            
 
         }
 
@@ -142,13 +134,28 @@ namespace Jungle
         {
             Piece piece= _game.GetSquare(row, col).Piece;
             if (_game.GetSquare(row, col).Piece == null)
+            {
                 boardMatrix[row, col].Child = null;
+                boardMatrix[row, col].BorderBrush = new SolidColorBrush(Colors.Black);
+                boardMatrix[row, col].BorderThickness = new Thickness(1) ;
+                boardMatrix[row, col].CanDrag = false;
+            }
+
+            
             else
             {
                 Image img = new Image();
                 img.Source = new BitmapImage(new Uri($"ms-appx:///Assets/{piece.ImageFile}.jpg"));
                 boardMatrix[row, col].Child = img;
+                boardMatrix[row, col].BorderThickness = new Thickness(5);
+                boardMatrix[row, col].CanDrag = true;
+                if (piece.Color == "red")
+                    boardMatrix[row, col].BorderBrush = new SolidColorBrush(Colors.Red);
+                else
+                    boardMatrix[row, col].BorderBrush = new SolidColorBrush(Colors.Blue);
             }
         }
+
+
     }
 }

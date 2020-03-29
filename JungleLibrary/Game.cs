@@ -67,6 +67,13 @@ namespace JungleLibrary
             
         }
 
+        public bool IsValidMove(Move move)
+        {
+            if (move.StartSquare.Piece.Name == "rat")
+                return true;
+            return false;
+        }
+
 
     }
 }

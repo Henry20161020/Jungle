@@ -12,19 +12,20 @@ namespace JungleLibrary
         private Piece _piece;
 
         public string Name { get; set; }
-        public string ImageFile { get; set; }
+        public string ImageFile
+        {
+            get => Name;
+        }
         public Piece Piece { get; set; }
 
         public Square()
         {
-            Name = "battle ground";
-            ImageFile = "grass";
+            Name = "grass";
             Piece = null;
         }
-        public Square(string name, string fileName, Piece piece)
+        public Square(string name, Piece piece)
         {
             Name = name;
-            ImageFile = fileName;
             Piece = piece;
         }
     }

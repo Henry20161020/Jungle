@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Gaming.UI;
 using Windows.Security.Cryptography.Core;
 using Windows.UI;
 using Windows.UI.Input;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -90,18 +92,23 @@ namespace Jungle
 
         private void OnDropCompletedHandler(UIElement sender, DropCompletedEventArgs args)
         {
-            if (_startSquare != null && _endSquare != null)
+            try
             {
-                _game.MakeMove(new Move(_game.GetSquare(_dragStartRow, _dragStartColumn),_game.GetSquare(_dragEndRow, _dragEndColumn)));
-                Update(_dragStartRow, _dragStartColumn);
-                Update(_dragEndRow, _dragEndColumn);
-
-                //Grid.SetRow(_startSquare, _dragEndRow);
-                //Grid.SetColumn(_startSquare, _dragEndColumn);
-                //Grid.SetRow(_endSquare, _dragStartRow);
-                //Grid.SetColumn(_endSquare, _dragStartColumn);
-                ResetDragState();
+                if (_startSquare != null && _endSquare != null && _startSquare!=_endSquare &&
+                    _game.IsValidMove(_dragStartRow, _dragStartColumn, _dragEndRow, _dragEndColumn))
+                {
+                    _game.MakeMove(new Move(_game.GetSquare(_dragStartRow, _dragStartColumn),
+                        _game.GetSquare(_dragEndRow, _dragEndColumn)));
+                    Update(_dragStartRow, _dragStartColumn);
+                    Update(_dragEndRow, _dragEndColumn);
+                    ResetDragState();
+                }
             }
+            catch (Exception ex)
+            {
+                ShowExceptionDialog(ex);
+            }
+
         }
 
 
@@ -154,6 +161,12 @@ namespace Jungle
                 else
                     boardMatrix[row, col].BorderBrush = new SolidColorBrush(Colors.Blue);
             }
+        }
+
+        private async Task ShowExceptionDialog(Exception ex)
+        {
+            MessageDialog dialog = new MessageDialog(ex.Message);
+            await dialog.ShowAsync();
         }
 
 

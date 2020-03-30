@@ -5,11 +5,31 @@
     xmlns:local="using:Jungle"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:jungleLibrary="using:JungleLibrary"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Loaded="MainPage_OnLoaded" Width="800" Height="1000">
-    <Canvas x:Name="CanvasMain" Width="800" Height="1000">
-        <Grid x:Name="GrdMain" Canvas.Left="50" Canvas.Top="50" Width="700" Height="900" >
+    Loaded="MainPage_OnLoaded" Width="1000" Height="1000">
+    <Canvas x:Name="CanvasMain" Width="1000" Height="1000">
+        <Grid x:Name="GrdCtrl" Canvas.Left="50" Canvas.Top="50" Width="150" Height="900" >
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                Current Player
+            </TextBlock>
+
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{x:Bind _game.Status, Mode=OneWay}"></TextBlock>
+            <Button Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center">New Game</Button>
+            <Button Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Center">Save Game</Button>
+            <Button Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Center">Load Game</Button>
+            <Button Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Center">Replay Game</Button>
+        </Grid>
+        <Grid x:Name="GrdMain" Canvas.Left="250" Canvas.Top="50" Width="700" Height="900" >
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>

@@ -2,6 +2,7 @@
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 
 namespace JungleLibrary
 {
@@ -10,6 +11,9 @@ namespace JungleLibrary
         private const int HEIGHT = 9;
         private const int WIDTH = 7;
         private Square[,] _board = new Square[HEIGHT, WIDTH];
+        public string Status { get; set; }
+
+
 
         public Game()
         {
@@ -53,6 +57,8 @@ namespace JungleLibrary
             _board[6, 2].Piece = new Piece("Wolf", "wolf", "blue");
             _board[6, 0].Piece = new Piece("Elephant", "elephant", "blue");
 
+            Status = "blue";
+
 
         }
 
@@ -65,7 +71,8 @@ namespace JungleLibrary
         {
             move.EndSquare.Piece = move.StartSquare.Piece;
             move.StartSquare.Piece = null;
-            
+            Status = Status == "red" ? "blue" : "red";
+
         }
 
         private bool isSafeDestination(Square start, Square end)
@@ -105,7 +112,7 @@ namespace JungleLibrary
                     int step = (endRow - startRow) / Math.Abs(startRow - endRow);
                     for (int row = startRow; Math.Abs(row - endRow)>0; row += step)
                     {
-                        if (_board[row, startCol].Piece?.Name == "Rat")
+                        if (_board[row, startCol].Piece?.Name == "Rat" && _board[row, startCol].Piece?.Color!=Status)
                         {
                             throw new Exception("There is Rat. The animal cannot jump.");
                         }
@@ -120,7 +127,7 @@ namespace JungleLibrary
                     int step = (endCol - startCol) / Math.Abs(startCol - endCol);
                     for (int col = startCol; Math.Abs(col - endCol)>0; col += step)
                     {
-                        if (_board[startRow, col].Piece?.Name == "Rat")
+                        if (_board[startRow, col].Piece?.Name == "Rat" && _board[startRow, col].Piece?.Color != Status)
                         {
                             throw new Exception("There is Rat. The animal cannot jump.");
                         }
@@ -144,10 +151,13 @@ namespace JungleLibrary
         {
             Square startSquare = _board[startRow, startCol];
             Square endSquare = _board[endRow, endCol];
+            if (startSquare.Piece?.Color!=Status) throw new Exception("This is not your turn");
+            
             if (isSafeDestination(startSquare, endSquare) && isDistanceValid(startRow, startCol, endRow, endCol))
             {
                 if (endSquare.Piece == null)
                     return true;
+                if (startSquare.Piece.Color == endSquare.Piece.Color) throw new Exception("Two animals can not be in the same square");
                 if (startSquare.Piece.CompareTo(endSquare.Piece) == 1)
                     return true;
                 if (endSquare.Name == "trap")

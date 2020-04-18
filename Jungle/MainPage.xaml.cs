@@ -4,10 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using System.Timers;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Gaming.UI;
 using Windows.Security.Cryptography.Core;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Popups;
@@ -19,6 +22,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Jungle.Dal;
 using JungleLibrary;
 
 
@@ -36,6 +40,8 @@ namespace Jungle
         private Border[,] boardMatrix = new Border[9, 7];
         private Border _startSquare, _endSquare;
         private Game _game=new Game();
+        private List<Move> _moveList=new List<Move>();
+        private DispatcherTimer _timer;
 
         public MainPage()
         {
@@ -120,11 +126,57 @@ namespace Jungle
 
 
 
+        private void OnSaveClicked(object sender, RoutedEventArgs e)
+        {
+
+            DataHandler dao= new DataHandler();
+            dao.SaveGame(_game.MoveList);
+
+
+            
+        }
+
         private void OnDragStartHandler(UIElement sender, DragStartingEventArgs args)
         {
             _startSquare = sender as Border;
             _dragStartRow = Grid.GetRow(_startSquare);
             _dragStartColumn = Grid.GetColumn(_startSquare);
+        }
+
+        private async void OnLoadClicked(object sender, RoutedEventArgs e)
+        {
+
+            DataHandler dao = new DataHandler();
+            _moveList= await dao.LoadGame();
+            if (_moveList.Count>0)
+            {
+                OnNewClicked(sender, e);
+                if (sender == btnReplay)
+                {
+
+                    _timer=new DispatcherTimer();
+                    _timer.Interval = new TimeSpan(0, 0, 1);
+                    _timer.Tick += OnTimerTick;
+                    _timer.Start();
+
+                }
+                else
+                {
+                    foreach (Move move in _moveList)
+                        MoveAndUpdate(move);
+                }
+                
+            }
+
+
+        }
+
+        private void OnNewClicked(object sender, RoutedEventArgs e)
+        {
+            _game.Reset();
+            for (int row = 0; row < 9; row++)
+            for (int col = 0; col < 7; col++)
+                Update(row, col);
         }
 
         private void ResetDragState()
@@ -163,10 +215,49 @@ namespace Jungle
             }
         }
 
-        private async Task ShowExceptionDialog(Exception ex)
+        private async void ShowExceptionDialog(Exception ex)
         {
             MessageDialog dialog = new MessageDialog(ex.Message);
             await dialog.ShowAsync();
+        }
+
+        public void SaveGame(string fileName,List<Move> moveList)
+        {
+
+            List<string> moveAsString = new List<string>();
+            foreach (Move move in moveList)
+                moveAsString.Add(move.ToString());
+            File.WriteAllLines(fileName, moveAsString);
+        }
+
+        private void Wait(int millisecond, Action action)
+        {
+            var timer = new DispatcherTimer();
+            timer.Tick += delegate
+            {
+                action.Invoke();
+                timer.Stop();
+            };
+
+            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
+            timer.Start();
+        }
+
+        private void OnTimerTick(object sender, object e)
+        {
+            if (_game.CurrentMove < _moveList.Count)
+                MoveAndUpdate(_moveList[_game.CurrentMove++]);
+            else
+            {
+                _timer.Stop();
+            }
+        }
+
+        private void MoveAndUpdate(Move move)
+        {
+            _game.MakeMove(_game.UpdateSquare(move));
+            Update(move.StartSquare.Row, move.StartSquare.Col);
+            Update(move.EndSquare.Row, move.EndSquare.Col);
         }
 
 

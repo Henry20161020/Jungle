@@ -11,6 +11,9 @@ namespace JungleLibrary
         private string _imageFile;
         private Piece _piece;
 
+        public int Row { get; set; }
+        public int Col { get; set; }
+
         public string Name { get; set; }
         public string ImageFile
         {
@@ -18,15 +21,19 @@ namespace JungleLibrary
         }
         public Piece Piece { get; set; }
 
-        public Square()
+        public Square(int row, int col)
         {
             Name = "grass";
             Piece = null;
+            Row = row;
+            Col = col;
         }
-        public Square(string name, Piece piece)
+        public Square(string name, Piece piece, int row, int col)
         {
             Name = name;
             Piece = piece;
+            Row = row;
+            Col = col;
         }
     }
 }

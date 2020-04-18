@@ -19,15 +19,15 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <TextBlock x:Name="TxtPlayer" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
                 Current Player
             </TextBlock>
 
             <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{x:Bind _game.Status, Mode=OneWay}"></TextBlock>
-            <Button Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center">New Game</Button>
-            <Button Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Center">Save Game</Button>
-            <Button Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Center">Load Game</Button>
-            <Button Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Center">Replay Game</Button>
+            <Button Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Click="OnNewClicked">New Game</Button>
+            <Button x:Name="btnSave" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" Click="OnSaveClicked">Save Game</Button>
+            <Button x:Name="btnLoad" Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Click="OnLoadClicked">Load Game</Button>
+            <Button x:Name="btnReplay" Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Click="OnLoadClicked">Replay Game</Button>
         </Grid>
         <Grid x:Name="GrdMain" Canvas.Left="250" Canvas.Top="50" Width="700" Height="900" >
             <Grid.RowDefinitions>

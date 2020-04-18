@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -7,17 +8,31 @@ using System.Runtime.ConstrainedExecution;
 
 namespace JungleLibrary
 {
-    public class Game
+    public class Game : INotifyPropertyChanged
     {
         
         private const int HEIGHT = 9;
         private const int WIDTH = 7;
         private Square[,] _board = new Square[HEIGHT, WIDTH];
-        public string Status { get; set; }
+        private int[] _pieceCount=new int[2];    // The array to count the pieces of two players. The first element is to count blue and the second element is to count red.
+        private string _status;
+
+        public string Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Status"));
+                }
+            }
+        }
 
         public List<Move> MoveList { get; set; }
         public int CurrentMove { get; set; }
-
+        public event PropertyChangedEventHandler PropertyChanged;
         public Game()
         {
             Reset();
@@ -31,6 +46,12 @@ namespace JungleLibrary
 
         public void MakeMove(Move move)
         {
+            Piece piece = move.EndSquare.Piece;
+            if (piece!=null)
+                if (piece.Color == "blue")
+                    _pieceCount[0]--;
+                else
+                    _pieceCount[1]--;
             move.EndSquare.Piece = move.StartSquare.Piece;
             move.StartSquare.Piece = null;
             Status = Status == "red" ? "blue" : "red";
@@ -176,6 +197,8 @@ namespace JungleLibrary
             Status = "blue";
             MoveList = new List<Move>();
             CurrentMove = 0;
+            _pieceCount[0] = 8;
+            _pieceCount[1] = 8;
         }
 
         public Move UpdateSquare(Move move)
@@ -195,6 +218,37 @@ namespace JungleLibrary
 
             return move;
 
+        }
+
+        public bool isGameEnded()
+        {
+            Piece denPiece = _board[0, 3].Piece;
+            if (denPiece!=null)
+                if (denPiece.Color == "blue")
+                {
+                    Status = "Blue win";
+                    return true;
+                }
+            denPiece = _board[8, 3].Piece;
+            if (denPiece != null)
+                if (denPiece.Color == "red")
+                {
+                    Status = "Red win";
+                    return true;
+                }
+
+            if (_pieceCount[0] == 0)
+            {
+                Status = "Red win";
+                return true;
+            }
+
+            if (_pieceCount[1] == 0)
+            {
+                Status = "Blue win";
+                return true;
+            }
+            return false;
         }
 
     }

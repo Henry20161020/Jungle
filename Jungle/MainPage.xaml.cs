@@ -51,11 +51,6 @@ namespace Jungle
         private void InitiateBoard()
         {
             
-            Grid myGrid = new Grid();
-            myGrid.Width = 250;
-            myGrid.Height = 100;
-            myGrid.HorizontalAlignment = HorizontalAlignment.Left;
-            myGrid.VerticalAlignment = VerticalAlignment.Top;
 
             for (int row = 0; row < 9; row++)
             for (int col = 0; col < 7; col++)
@@ -115,8 +110,21 @@ namespace Jungle
                 ShowExceptionDialog(ex);
             }
 
+            ChechGameEnd();
+
+
         }
 
+        private void ChechGameEnd()
+        {
+            if (_game.isGameEnded())
+            {
+                TxtPlayer.Text = "Game Over";
+                for (int row = 0; row < 9; row++)
+                for (int col = 0; col < 7; col++)
+                    boardMatrix[row, col].CanDrag = false;
+            }
+        }
 
 
         private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
@@ -151,10 +159,10 @@ namespace Jungle
             if (_moveList.Count>0)
             {
                 OnNewClicked(sender, e);
-                if (sender == btnReplay)
+                if (sender == BtnReplay)
                 {
-
-                    _timer=new DispatcherTimer();
+                    enableButtons(false);
+                    _timer =new DispatcherTimer();
                     _timer.Interval = new TimeSpan(0, 0, 1);
                     _timer.Tick += OnTimerTick;
                     _timer.Start();
@@ -164,6 +172,7 @@ namespace Jungle
                 {
                     foreach (Move move in _moveList)
                         MoveAndUpdate(move);
+                    ChechGameEnd();
                 }
                 
             }
@@ -230,18 +239,6 @@ namespace Jungle
             File.WriteAllLines(fileName, moveAsString);
         }
 
-        private void Wait(int millisecond, Action action)
-        {
-            var timer = new DispatcherTimer();
-            timer.Tick += delegate
-            {
-                action.Invoke();
-                timer.Stop();
-            };
-
-            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
-            timer.Start();
-        }
 
         private void OnTimerTick(object sender, object e)
         {
@@ -250,6 +247,8 @@ namespace Jungle
             else
             {
                 _timer.Stop();
+                ChechGameEnd();
+                enableButtons(true);
             }
         }
 
@@ -258,6 +257,13 @@ namespace Jungle
             _game.MakeMove(_game.UpdateSquare(move));
             Update(move.StartSquare.Row, move.StartSquare.Col);
             Update(move.EndSquare.Row, move.EndSquare.Col);
+        }
+
+        private void enableButtons(bool enabled)
+        {
+            BtnNew.IsEnabled = enabled;
+            BtnSave.IsEnabled = enabled;
+            BtnLoad.IsEnabled = enabled;
         }
 
 

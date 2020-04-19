@@ -10,17 +10,15 @@ using JungleLibrary;
 
 namespace Jungle.Dal
 {
+    /// <summary>
+    /// This class handles the loading and saving
+    /// </summary>
     class DataHandler
     {
-        private List<Move> _moveList = new List<Move>();
-
-        public DataHandler()
-        {
-
-        }
-        //load the strings from a file and give back a List<Product>
-
-
+        /// <summary>
+        /// Load the strings from a file and give back a List<Move>
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<Move>> LoadGame()
         {
             FileOpenPicker fileOpenPicker = new FileOpenPicker();
@@ -40,42 +38,40 @@ namespace Jungle.Dal
                         moveListAsString = dataReader.ReadString(numBytesLoaded);
                     }
                 }
-
                 stream.Dispose();
 
                 string[] moveStringList = moveListAsString.Split(System.Environment.NewLine);
-                int moveNumber = int.Parse(moveStringList[0]);
+                // The first number determines how many moves in the file need to be read
+                // I use this trick because I haven't found a way to empty a file
+                int moveNumber = int.Parse(moveStringList[0]);      
                 for (int i = 1; i <= moveNumber; i++)
                 {
                     moveList.Add(Move.Parse(moveStringList[i]));
                 }
             }
-
             return moveList;
-
         }
 
-        //Accept a List<Product> dump them into a CSV
+        //
+        /// <summary>
+        /// Accept a List<Move> and dump them into a CSV file
+        /// </summary>
+        /// <param name="moveList">a list of moves</param>
         public async void SaveGame(List<Move> moveList)
         {
             FileSavePicker fileSavePicker = new FileSavePicker();
             fileSavePicker.DefaultFileExtension = ".csv";
             fileSavePicker.FileTypeChoices.Add("game data", new List<string>() { ".csv" });
             StorageFile targetFile = await fileSavePicker.PickSaveFileAsync();
-            
-            
-
             if (targetFile != null)
             {
-                //StorageFolder targetFolder = await targetFile.GetParentAsync();
-                //string fileName = targetFile.Name;
-                //await targetFile.DeleteAsync();
-                //targetFile=await targetFolder.CreateFileAsync(fileName);
                 var stream = await targetFile.OpenAsync(Windows.Storage.FileAccessMode.ReadWrite);
                 using (var outputStream = stream.GetOutputStreamAt(0))
                 {
                     using (var dataWriter = new Windows.Storage.Streams.DataWriter(outputStream))
                     {
+                        // The first number determines how many moves should be read in the future loading
+                        // I use this trick because I haven't found a way to empty a file
                         dataWriter.WriteString(moveList.Count.ToString()+ System.Environment.NewLine);
                         foreach (Move move in moveList)
                             dataWriter.WriteString(move.ToString() + System.Environment.NewLine);
@@ -83,11 +79,8 @@ namespace Jungle.Dal
                         await outputStream.FlushAsync();
                     }
                 }
-
                 stream.Dispose();
-
             }
-            
         }
     }
 }

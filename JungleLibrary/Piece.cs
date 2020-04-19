@@ -4,12 +4,21 @@ using System.Text;
 
 namespace JungleLibrary
 {
+    /// <summary>
+    /// This class reprensents a piece in the game
+    /// </summary>
     public class Piece : IComparable<Piece>
     {
-        public string Name { get; set; }
-        public string ImageFile { get; set; }
-        public string Color { get; set; }
+        public string Name { get; set; }        // Piece name
+        public string ImageFile { get; set; }   // Piece image file name
+        public string Color { get; set; }       // Piece color
 
+        /// <summary>
+        /// The constructor to create a piece
+        /// </summary>
+        /// <param name="name">piece name</param>
+        /// <param name="fileName">piece image file name</param>
+        /// <param name="color">piece color</param>
         public Piece(string name, string fileName, string color)
         {
             Name = name;
@@ -17,8 +26,14 @@ namespace JungleLibrary
             Color = color;
         }
 
+        /// <summary>
+        /// Compare the power of two pieces
+        /// </summary>
+        /// <param name="otherPiece">the other piece</param>
+        /// <returns>1 for win, -1 for lose</returns>
         public int CompareTo(Piece otherPiece)
         {
+            // Higher integer means higher power, but rat can win elephant
             Dictionary<string, int> power = new Dictionary<string, int>
             {
                 {"Rat",0},
@@ -36,6 +51,5 @@ namespace JungleLibrary
             else
                 return -1;
         }
-
     }
 }
